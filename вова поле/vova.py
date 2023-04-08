@@ -107,7 +107,7 @@ while running:
 
     # После отрисовки всего, переворачиваем экран
     alpha += 0.01
-    //поворот
+    # поворот
     pygame.draw.circle(sc, BLUE, (W // 2 + 100*math.cos(alpha), H // 2  + 100*math.sin(alpha)), 5 * k)
     pygame.display.flip()
 

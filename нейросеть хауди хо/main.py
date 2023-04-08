@@ -6,9 +6,10 @@ import neat
 
 width = 1300
 height = 1100
-bg = (213,193,154,255)
+bg = (213, 193, 154, 255)
 
 generation = 0
+
 
 class Car:
 
@@ -47,13 +48,13 @@ class Car:
 		self.draw_radars(screen)
 
 	def draw_center(self, screen):
-		pygame.draw.circle(screen, (0,72,186), (math.floor(self.center[0]), math.floor(self.center[1])), 5)
+		pygame.draw.circle(screen, (0, 72, 186), (math.floor(self.center[0]), math.floor(self.center[1])), 5)
 
 	def draw_radars(self, screen):
 		for r in self.radars:
 			p, d = r
-			pygame.draw.line(screen, (183,235,70), self.center, p, 1)
-			pygame.draw.circle(screen, (183,235,70), p, 5)
+			pygame.draw.line(screen, (183, 235, 70), self.center, p, 1)
+			pygame.draw.circle(screen, (183, 235, 70), p, 5)
 
 	def compute_radars(self, degree, road):
 		length = 0
@@ -86,9 +87,9 @@ class Car:
 
 		for p in self.collision_points:
 			if(road.get_at((int(p[0]), int(p[1]))) == bg):
-				pygame.draw.circle(screen, (255,0,0), (int(p[0]), int(p[1])), 5)
+				pygame.draw.circle(screen, (255, 0, 0), (int(p[0]), int(p[1])), 5)
 			else:
-				pygame.draw.circle(screen, (15,192,252), (int(p[0]), int(p[1])), 5)
+				pygame.draw.circle(screen, (15, 192, 252), (int(p[0]), int(p[1])), 5)
 
 	def check_collision(self, road):
 		self.is_alive = True
@@ -144,7 +145,7 @@ class Car:
 
 		# update distance & time spent
 		self.distance += self.speed
-		self.time_spent += 1 # aka turns
+		self.time_spent += 1  # aka turns
 
 		# compute/check collision points & create radars
 		self.compute_collision_points()
@@ -228,12 +229,12 @@ def run_generation(genomes, config):
 				# car.draw_center(screen)
 				# car.draw_collision_points(road, screen)
 
-		label = heading_font.render("Поколение: " + str(generation), True, (73,168,70))
+		label = heading_font.render("Поколение: " + str(generation), True, (73, 168, 70))
 		label_rect = label.get_rect()
 		label_rect.center = (width / 1.5, 300)
 		screen.blit(label, label_rect)
 
-		label = font.render("Машин осталось: " + str(cars_left), True, (51,59,70))
+		label = font.render("Машин осталось: " + str(cars_left), True, (51, 59, 70))
 		label_rect = label.get_rect()
 		label_rect.center = (width / 1.5, 375)
 		screen.blit(label, label_rect)
