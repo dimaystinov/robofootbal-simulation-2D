@@ -1,19 +1,32 @@
-import pygame
-from vika_visual import draw_field, draw_soccers, init
-from vika_config import FPS
+import pygame as pg
+from vika_visual import draw_field, init
+from vika_config import FPS, teamb, teamr
+from vika_physics import RoboSoccer, Ball
 
 screen, clock = init()
 running = True
 
+blue_soccer = RoboSoccer(teamb)
+red_soccer = RoboSoccer(teamr)
+soccers = [blue_soccer, red_soccer]
+ball = Ball()
+
 while running:
-    # держим цикл на правильной скорости
     clock.tick(FPS)
-    for event in pygame.event.get():
-        # check for closing window
-        if event.type == pygame.QUIT:
+
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
             running = False
+        elif event.type == pg.KEYDOWN:
+            event_keydown = event
+    blue_soccer.if_keys()
+    blue_soccer.hit_ball(ball)
+    ball.draw()
+    ball.move()
 
     draw_field(screen)
-    draw_soccers(screen)
-    pygame.display.flip()
-pygame.quit()
+    ball.draw()
+    for soccer in soccers:
+        soccer.draw()
+    pg.display.flip()
+pg.quit()
