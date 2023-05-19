@@ -20,7 +20,7 @@ while running:
         elif event.type == pg.KEYDOWN:
             event_keydown = event
     blue_soccer.if_keys()
-    blue_soccer.hit_ball(ball)
+    blue_soccer.hit_ball(ball, blue_soccer.x, blue_soccer.y, blue_soccer.head_radius,red_soccer.x,red_soccer.y,red_soccer.head_radius )
     ball.draw()
     ball.move()
 

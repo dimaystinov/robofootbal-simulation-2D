@@ -25,24 +25,19 @@ class RoboSoccer:
     def draw(self):
         fov = 20
         fov_thickness = 2
-        if self.angle == 0:
-            pg.draw.rect(sc, self.body_color, (self.x - 6 * k, self.y - 9 * k, 12 * k, 18 * k))
-            pg.draw.lines(sc, FOV, True, [[self.x, self.y], [self.x + fov * k, self.y + fov * k],
-                                          [self.x + fov * k, self.y - fov * k]], fov_thickness * k)
-        elif self.angle == math.pi:
-            pg.draw.rect(sc, self.body_color, (self.x - 6 * k, self.y - 9 * k, 12 * k, 18 * k))
-            pg.draw.lines(sc, FOV, True, [[self.x, self.y], [self.x - fov * k, self.y + fov * k],
-                                          [self.x - fov * k, self.y - fov * k]], fov_thickness * k)
-        elif self.angle == math.pi / 2:
-            pg.draw.rect(sc, self.body_color, (self.x - 9 * k, self.y - 6 * k, 18 * k, 12 * k))
-            pg.draw.lines(sc, FOV, True, [[self.x, self.y], [self.x - fov * k, self.y - fov * k],
-                                          [self.x + fov * k, self.y - fov * k]], fov_thickness * k)
-        elif self.angle == math.pi * 1.5:
-            pg.draw.rect(sc, self.body_color, (self.x - 9 * k, self.y - 6 * k, 18 * k, 12 * k))
-            pg.draw.lines(sc, FOV, True, [[self.x, self.y], [self.x - fov * k, self.y + fov * k],
-                                          [self.x + fov * k, self.y + fov * k]], fov_thickness * k)
-        pg.draw.circle(sc, self.head_color, (self.x, self.y), self.head_radius)
-
+        #pg.draw.rect(sc, self.body_color, ((self.x -  math.cos(self.angle ), (self.y) - math.sin(self.angle ), (self.x) + math.cos(self.angle), (self.y) + math.sin(self.angle))))
+        pg.draw.lines(sc, FOV, True, [[self.x, self.y],
+                                      [self.x + 2 * fov * math.cos(self.angle + 1),
+                                       self.y + 2 * fov * math.sin(self.angle + 1 - math.pi)],
+                                      [self.x + 2 * fov * math.cos((self.angle - 1)),
+                                       self.y + 2 * fov * math.sin(self.angle - 1 - math.pi)]], fov_thickness * k)
+        pg.draw.circle(sc, self.head_color, (self.x + math.cos(self.angle + 1), self.y + math.sin(self.angle)),
+                       self.head_radius)
+        if(self.head_color == BLUE):
+            font = pg.font.SysFont(None, 24)
+            img = font.render(str(self.angle), True, BLUE)
+            sc.blit(img, (20, 20))
+        '''
         pg.draw.line(sc, RED, (self.x + k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5)),
                                self.y + k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))),
                      (self.x + k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5)),
@@ -50,7 +45,7 @@ class RoboSoccer:
         pg.draw.line(sc, RED, (self.x + k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5)),
                                self.y - k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))),
                      (self.x - k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5)),
-                      self.y - k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))))
+                      self.y - k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))))'''
 
     def if_keys(self):
         keys = pg.key.get_pressed()
@@ -60,42 +55,61 @@ class RoboSoccer:
     def move(self, keys):
         if keys[pg.K_w]:
             if self.y >= 6 * k:
-                self.y -= 2
-                self.angle = math.pi / 2
+                self.x += 5*(math.cos(self.angle))
+                self.y += 5*(math.sin(self.angle + math.pi))
         if keys[pg.K_a]:
             if self.x >= 9 * k:
-                self.x -= 2
-                self.angle = math.pi
+                self.x += 5 * (math.cos(self.angle + math.pi / 2))
+                self.y += 5 * (math.sin(self.angle - math.pi / 2))
         if keys[pg.K_s]:
             if self.y <= H - 6 * k:
-                self.y += 2
-                self.angle = math.pi * 1.5
+                self.x += -5 * (math.cos(self.angle))
+                self.y += 5 * (math.sin(self.angle))
         if keys[pg.K_d]:
             if self.x <= W - 9 * k:
-                self.x += 2
+                self.x += 5 * (math.cos(self.angle - math.pi / 2))
+                self.y += 5 * (math.sin(self.angle + math.pi / 2))
+
+        if keys[pg.K_q]:
+            if self.angle >= 2*math.pi:
                 self.angle = 0
+            self.angle += 0.2
+        if keys[pg.K_e]:
+            if self.angle <= 0:
+                self.angle += 2 * math.pi
+            self.angle -= 0.2
+
         # FIXME по диагонали движется в 2 раза быстрее
 
-    def hit_ball(self, ball):
+    def hit_ball(self, ball, bx, by ,br, rx,ry,rr):
         # FIXME сделать нормальные хитбоксы, если поставить больше ball.v будет неопределенное поведение
-        if (self.angle == 0) or (self.angle == math.pi):
+        if (ball.x - bx)**2 + (ball.y - by)**2 <= (br+ball.r)**2:
+            try:
+                angle = math.atan((ball.x - bx) / (ball.y - by))
+                ball.vx = 10 * math.cos(angle + math.pi/2)
+                ball.vy = 10 * math.sin(angle - math.pi/2)
+            except:
+                pass
+
+        '''if (self.angle == 0) or (self.angle == math.pi):
             x1 = self.x + k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5))
             y1 = self.y - k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))
             y2 = self.y + k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))
-            if (x1 < ball.x + ball.r < x1 + 12*k) and ((y1 <= ball.y <= y2) or (y2 <= ball.y <= y1)):
-                #ball.x = x1 - ball.r-1
-                ball.vx = -2
-            elif (x1 - 12*k < ball.x - ball.r < x1) and ((y1 <= ball.y <= y2) or (y2 <= ball.y <= y1)):
-                #ball.x = x1 + ball.r+1
-                ball.vx = 2
+            if (x1 < ball.x + ball.r < x1 + 12 * k) and ((y1 <= ball.y <= y2) or (y2 <= ball.y <= y1)):
+                # ball.x = x1 - ball.r-1
+                ball.vx = 10
+            elif (x1 - 12 * k < ball.x - ball.r < x1) and ((y1 <= ball.y <= y2) or (y2 <= ball.y <= y1)):
+                # ball.x = x1 + ball.r+1
+                ball.vx = -10
         else:
             x1 = self.x + k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5))
             x2 = self.x - k * 117 ** 0.5 * math.cos(self.angle + math.atan(1.5))
             y1 = self.y - k * 117 ** 0.5 * math.sin(self.angle + math.atan(1.5))
-            if (y1 < ball.y + ball.r < y1 + 12*k) and ((x1 <= ball.x <= x2) or (x2 <= ball.x <= x1)):
-                ball.vy = -2
-            elif (y1 - 12*k < ball.y - ball.r < y1) and ((x1 <= ball.x <= x2) or (x2 <= ball.x <= x1)):
-                ball.vy = 2
+            if (y1 < ball.y + ball.r < y1 + 12 * k) and ((x1 <= ball.x <= x2) or (x2 <= ball.x <= x1)):
+                ball.vy = 10
+            elif (y1 - 12 * k < ball.y - ball.r < y1) and ((x1 <= ball.x <= x2) or (x2 <= ball.x <= x1)):
+                ball.vy = -10'''
+
 
 
 class Ball:
@@ -112,16 +126,16 @@ class Ball:
         pg.draw.circle(sc, BLACK, (self.x, self.y), self.r)
 
     def move(self):
-        if (self.r <= self.x <= W-self.r) and (self.r <= self.y <= H-self.r):
+        if (self.r <= self.x <= W - self.r) and (self.r <= self.y <= H - self.r):
             self.x += self.vx
             self.y += self.vy
-        elif not (self.r <= self.x <= W-self.r):
+        elif not (self.r <= self.x <= W - self.r):
             if self.r > self.x:
                 self.x = self.r
             else:
                 self.x = W - self.r
             self.vx *= -1
-        elif not (self.r <= self.y <= H-self.r):
+        elif not (self.r <= self.y <= H - self.r):
             if self.r > self.y:
                 self.y = self.r
             else:
