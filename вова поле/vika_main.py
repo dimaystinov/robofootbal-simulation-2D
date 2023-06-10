@@ -13,7 +13,6 @@ ball = Ball()
 
 while running:
     clock.tick(FPS)
-
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
@@ -21,6 +20,9 @@ while running:
             event_keydown = event
     blue_soccer.if_keys()
     blue_soccer.hit_ball(ball, blue_soccer.x, blue_soccer.y, blue_soccer.head_radius,red_soccer.x,red_soccer.y,red_soccer.head_radius )
+    red_soccer.if_keys()
+    red_soccer.hit_ball(ball, red_soccer.x , red_soccer.y , blue_soccer.head_radius, blue_soccer.x, blue_soccer.y,
+                         red_soccer.head_radius)
     ball.draw()
     ball.move()
 
