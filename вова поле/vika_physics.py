@@ -114,11 +114,22 @@ class RoboSoccer:
 
     def hit_ball(self, ball, bx, by ,br, rx,ry,rr):
         # FIXME сделать нормальные хитбоксы, если поставить больше ball.v будет неопределенное поведение
-        if (ball.x - bx)**2 + (ball.y - by)**2 <= (br+ball.r)**2:
+        if (ball.x - bx) ** 2 + (ball.y - by) ** 2 >= (br + ball.r) ** 2:
+            self.hit_flag = True
+        if (ball.x - bx) ** 2 + (ball.y - by) ** 2 <= (br + ball.r) ** 2 and self.hit_flag:
             try:
-                angle = math.atan((ball.x - bx) / (ball.y - by))
-                ball.vx = 10 * math.cos(angle + math.pi/2)
-                ball.vy = 10 * math.sin(angle - math.pi/2)
+                angle = math.atan((ball.y - self.y) / (ball.x - self.x))
+                print(round(angle * 180 / 3.14), 2)
+                coef = 1
+                if (self.x - ball.x) > 0:
+                    coef = -1
+
+                ball.vx = 10 * math.cos(angle) * coef
+                ball.vy = 10 * math.sin(angle) * coef
+                print('bx', ball.x, 'by', ball.y, 'px', self.x, 'py', self.y, 'coef', coef, 'vx', ball.vx, 'vy',
+                      ball.vy)
+                self.hit_flag = False
+
             except:
                 pass
 
